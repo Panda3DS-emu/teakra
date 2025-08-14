@@ -1,0 +1,27 @@
+name: MacOS Build and Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    # There's no submodules, but we have this step regardless in case we ever add any
+    - uses: actions/checkout@v4
+    - name: Fetch submodules
+      run: git submodule update --init --recursive
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DTEAKRA_RUN_TESTS=ON -DTEAKRA_TEST_ASSETS_DIR="$HOME/assets"
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
