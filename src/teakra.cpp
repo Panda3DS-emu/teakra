@@ -9,6 +9,7 @@
 #include "memory_interface.h"
 #include "mmio.h"
 #include "processor.h"
+#include "register.h"
 #include "shared_memory.h"
 #include "teakra/teakra.h"
 #include "timer.h"
@@ -71,6 +72,22 @@ void Teakra::Reset() {
     impl->Reset();
 }
 
+std::array<std::uint8_t, 0x80000>& Teakra::GetDspMemory() {
+    return impl->shared_memory.raw;
+}
+
+const std::array<std::uint8_t, 0x80000>& Teakra::GetDspMemory() const {
+    return impl->shared_memory.raw;
+}
+
+RegisterState& Teakra::GetRegisterState() {
+    return impl->processor.GetRegisterState();
+}
+
+const RegisterState& Teakra::GetRegisterState() const {
+    return impl->processor.GetRegisterState();
+}
+
 void Teakra::Run(unsigned cycle) {
     impl->processor.Run(cycle);
 }
@@ -110,9 +127,8 @@ void Teakra::MaskSemaphore(std::uint16_t value) {
     impl->apbp_from_dsp.MaskSemaphore(value);
 }
 void Teakra::SetAHBMCallback(const AHBMCallback& callback) {
-    impl->ahbm.SetExternalMemoryCallback(callback.read8, callback.write8,
-        callback.read16, callback.write16,
-        callback.read32, callback.write32);
+    impl->ahbm.SetExternalMemoryCallback(callback.read8, callback.write8, callback.read16,
+                                         callback.write16, callback.read32, callback.write32);
 }
 
 std::uint16_t Teakra::AHBMGetUnitSize(std::uint16_t i) const {

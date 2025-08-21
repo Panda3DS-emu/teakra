@@ -6,6 +6,7 @@
 #include <memory>
 
 namespace Teakra {
+struct RegisterState;
 
 struct AHBMCallback {
     std::function<std::uint8_t(std::uint32_t address)> read8;
@@ -30,6 +31,12 @@ public:
     ~Teakra();
 
     void Reset();
+
+    std::array<std::uint8_t, 0x80000>& GetDspMemory();
+    const std::array<std::uint8_t, 0x80000>& GetDspMemory() const;
+
+    RegisterState& GetRegisterState();
+    const RegisterState& GetRegisterState() const;
 
     // APBP Data
     bool SendDataIsEmpty(std::uint8_t index) const;
